@@ -37,7 +37,10 @@ class ShareSession(val link: ShareLink) {
         .readTimeout(30, TimeUnit.SECONDS)
         .addInterceptor(Interceptor { chain ->
             val req = chain.request()
-            val ours = req.url.host == baseUrl.host && req.url.port == baseUrl.port
+            // Only API calls get the header: DSM withholds the sharing_sid cookie from a share page
+            // request that already carries it, and every later call then fails with error 101.
+            val ours = req.url.host == baseUrl.host && req.url.port == baseUrl.port &&
+                req.url.encodedPath.contains("/webapi/")
             chain.proceed(if (ours) req.newBuilder().header("X-SYNO-SHARING", link.passphrase).build() else req)
         })
         .build()
