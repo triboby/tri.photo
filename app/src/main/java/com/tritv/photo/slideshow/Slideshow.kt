@@ -150,7 +150,9 @@ private fun SinglePhoto(item: MediaItem, requests: PhotoRequests, kenBurns: Bool
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize().graphicsLayer {
                     val t = progress.value
-                    val s = if (zoomIn) 1f + KEN_BURNS_ZOOM * t else 1f + KEN_BURNS_ZOOM * (1f - t)
+                    // Start from 1 + DRIFT so the drift (at most DRIFT / 2 of the width each way)
+                    // never pulls an edge into view.
+                    val s = 1f + KEN_BURNS_DRIFT + KEN_BURNS_ZOOM * (if (zoomIn) t else 1f - t)
                     scaleX = s
                     scaleY = s
                     translationX = drift * size.width * KEN_BURNS_DRIFT * (t - 0.5f)
