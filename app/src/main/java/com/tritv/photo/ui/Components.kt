@@ -80,8 +80,10 @@ fun PillButton(
     val focused = if (kind == PillKind.Primary) PhotoColors.PrimaryPress else PhotoColors.Primary
     Button(
         onClick = onClick,
-        modifier = modifier.height(48.dp),
-        contentPadding = PaddingValues(horizontal = 28.dp),
+        // Height comes from the padding, not a fixed size: tv-material places the label's row at
+        // the top of the button, so a button taller than that row showed its label off-centre.
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 12.dp),
         shape = ButtonDefaults.shape(Radius.Pill),
         colors = ButtonDefaults.colors(
             containerColor = container,
