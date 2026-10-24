@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -183,6 +184,9 @@ fun LinkField(
     var editing by remember { mutableStateOf(false) }
     val keyboard = LocalSoftwareKeyboardController.current
     LaunchedEffect(editing) { if (editing) keyboard?.show() else keyboard?.hide() }
+    // Go usually navigates away in the same frame, before the effect above can hide the keyboard;
+    // a keyboard left up keeps swallowing the D-pad on the next screen.
+    DisposableEffect(Unit) { onDispose { keyboard?.hide() } }
 
     fun leave() {
         editing = false
@@ -200,6 +204,7 @@ fun LinkField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Go),
         keyboardActions = KeyboardActions(onGo = {
             editing = false
+            keyboard?.hide()
             onDone()
         }),
         modifier = modifier
