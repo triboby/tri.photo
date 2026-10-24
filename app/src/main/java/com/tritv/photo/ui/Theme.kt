@@ -3,11 +3,15 @@ package com.tritv.photo.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
@@ -57,7 +61,11 @@ val Inter = FontFamily(
     Font(R.font.inter_semibold, FontWeight.SemiBold),
 )
 
-private const val SS01 = "ss01"
+/**
+ * Every number in the app (clock, dates, counts, settings values) uses Inter's tabular lining
+ * digits, so digits line up and look the same on every screen.
+ */
+private const val DIGITS = "tnum, lnum"
 
 private val CenteredLine = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both)
 
@@ -67,23 +75,40 @@ private val CenteredLine = LineHeightStyle(alignment = LineHeightStyle.Alignment
  * body size goes soft at that distance.
  */
 object PhotoType {
-    val Display = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 48.sp, lineHeight = 52.sp, letterSpacing = (-1.2).sp, fontFeatureSettings = SS01)
-    val Title = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 32.sp, lineHeight = 36.sp, letterSpacing = (-0.64).sp, fontFeatureSettings = SS01)
-    val RowTitle = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = (-0.22).sp, fontFeatureSettings = SS01)
-    val Body = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 18.sp, lineHeight = 26.sp, fontFeatureSettings = SS01)
+    val Display = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 48.sp, lineHeight = 52.sp, letterSpacing = (-1.2).sp, fontFeatureSettings = DIGITS)
+    val Title = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 32.sp, lineHeight = 36.sp, letterSpacing = (-0.64).sp, fontFeatureSettings = DIGITS)
+    val RowTitle = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = (-0.22).sp, fontFeatureSettings = DIGITS)
+    val Body = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 18.sp, lineHeight = 26.sp, fontFeatureSettings = DIGITS)
     /**
      * Pill labels are mostly Chinese, so they use the system font: mixing Inter's line metrics
      * with the system's Chinese glyphs drew them low in the pill. The line is centred and trimmed
      * so the label sits in the middle of the pill whatever the font.
      */
     val Button = TextStyle(fontWeight = FontWeight.Normal, fontSize = 18.sp, lineHeight = 24.sp, lineHeightStyle = CenteredLine)
-    val Caption = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 15.sp, lineHeight = 20.sp, fontFeatureSettings = SS01)
-    val Tag = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 18.sp, letterSpacing = 0.4.sp, lineHeightStyle = CenteredLine)
-    val Clock = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 64.sp, lineHeight = 68.sp, letterSpacing = (-1.4).sp, fontFeatureSettings = "$SS01, tnum")
+    val Caption = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 15.sp, lineHeight = 20.sp, fontFeatureSettings = DIGITS)
+    val Tag = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 18.sp, letterSpacing = 0.4.sp, lineHeightStyle = CenteredLine, fontFeatureSettings = DIGITS)
+    /** Section labels inside a settings card and eyebrows above titles. */
+    val Label = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 13.sp, lineHeight = 18.sp, letterSpacing = 0.4.sp, fontFeatureSettings = DIGITS)
+    /** The date under a photo. */
+    val PhotoDate = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 28.sp, lineHeight = 32.sp, letterSpacing = (-0.5).sp, fontFeatureSettings = DIGITS)
+    val Clock = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 32.sp, lineHeight = 36.sp, letterSpacing = (-0.5).sp, fontFeatureSettings = DIGITS)
 }
 
-/** Tabular (fixed-width) digits, for dates, counts and the clock. */
-fun TextStyle.tabular() = copy(fontFeatureSettings = listOfNotNull(fontFeatureSettings, "tnum").joinToString(", "))
+/**
+ * [text] with its digits set in Inter, for the system-font styles ([PhotoType.Tag]): the line
+ * metrics stay the system font's, so the label stays centred, but "3 年前" uses the same digits
+ * as the rest of the app.
+ */
+fun interDigits(text: String): AnnotatedString = buildAnnotatedString {
+    var i = 0
+    while (i < text.length) {
+        var j = i
+        val digits = text[i].isDigit()
+        while (j < text.length && text[j].isDigit() == digits) j++
+        if (digits) withStyle(SpanStyle(fontFamily = Inter)) { append(text, i, j) } else append(text, i, j)
+        i = j
+    }
+}
 
 private val colors = lightColorScheme(
     primary = PhotoColors.Primary,

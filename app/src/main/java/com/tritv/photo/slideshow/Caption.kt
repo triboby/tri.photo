@@ -11,10 +11,15 @@ object Caption {
 
     /** "2021 年 10 月 23 日 · 莫干山", or null when the photo has no time. */
     fun line(item: MediaItem): String? {
+        val date = date(item) ?: return null
+        return if (item.place != null) "$date · ${item.place}" else date
+    }
+
+    /** "2021 年 10 月 23 日", or null when the photo has no time. */
+    fun date(item: MediaItem): String? {
         if (item.takenAt <= 0) return null
         val c = Calendar.getInstance(UTC).apply { timeInMillis = item.takenAt * 1000 }
-        val date = "${c.get(Calendar.YEAR)} 年 ${c.get(Calendar.MONTH) + 1} 月 ${c.get(Calendar.DAY_OF_MONTH)} 日"
-        return if (item.place != null) "$date · ${item.place}" else date
+        return "${c.get(Calendar.YEAR)} 年 ${c.get(Calendar.MONTH) + 1} 月 ${c.get(Calendar.DAY_OF_MONTH)} 日"
     }
 
     /**

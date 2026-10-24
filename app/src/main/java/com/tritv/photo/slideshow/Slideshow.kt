@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Text
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
@@ -38,7 +39,8 @@ import com.tritv.photo.data.Settings
 import com.tritv.photo.data.ShareSession
 import com.tritv.photo.ui.PhotoColors
 import com.tritv.photo.ui.PhotoType
-import com.tritv.photo.ui.tabular
+import com.tritv.photo.ui.ScreenMargin
+import com.tritv.photo.ui.interDigits
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -115,7 +117,7 @@ fun Slideshow(
             Captions(current, showDetails)
         }
         if (settings.showClock) {
-            Clock(Modifier.align(Alignment.TopEnd).padding(top = 32.dp, end = 48.dp))
+            Clock(Modifier.align(Alignment.TopEnd).padding(top = PHOTO_MARGIN_V, end = ScreenMargin))
         }
     }
 }
@@ -186,26 +188,33 @@ private fun Captions(slide: Slide, showDetails: Boolean) {
         ),
     )
     Row(
-        Modifier.fillMaxSize().padding(start = 48.dp, end = 48.dp, bottom = 36.dp),
+        Modifier.fillMaxSize().padding(horizontal = ScreenMargin, vertical = PHOTO_MARGIN_V),
         verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.spacedBy(PAIR_GAP + 96.dp),
+        // Each caption starts the same distance from its own photo's left edge.
+        horizontalArrangement = Arrangement.spacedBy(PAIR_GAP + ScreenMargin * 2),
     ) {
         for (item in slide.items) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Caption.yearsAgo(item, now)?.let { ago ->
-                    Text(
-                        ago,
-                        style = PhotoType.Tag,
-                        color = PhotoColors.OnPhoto,
-                        modifier = Modifier
-                            .background(PhotoColors.PhotoChip, RoundedCornerShape(percent = 50))
-                            .padding(horizontal = 14.dp, vertical = 5.dp),
-                    )
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                val ago = Caption.yearsAgo(item, now)
+                if (ago != null || item.place != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ago?.let {
+                            Text(
+                                interDigits(it),
+                                style = PhotoType.Tag,
+                                color = PhotoColors.OnPhoto,
+                                modifier = Modifier
+                                    .background(PhotoColors.PhotoChip, RoundedCornerShape(percent = 50))
+                                    .padding(horizontal = 10.dp, vertical = 3.dp),
+                            )
+                        }
+                        item.place?.let { Text(it, style = PhotoType.Caption, color = PhotoColors.OnPhotoMuted) }
+                    }
                 }
-                Caption.line(item)?.let { Text(it, style = PhotoType.Body.tabular(), color = PhotoColors.OnPhotoMuted) }
+                Caption.date(item)?.let { Text(it, style = PhotoType.PhotoDate, color = PhotoColors.OnPhoto) }
                 if (showDetails) {
                     val details = listOfNotNull(item.filename, item.camera).joinToString(" · ")
-                    Text(details, style = PhotoType.Caption, color = PhotoColors.OnPhotoMuted)
+                    Text(details, style = PhotoType.Caption.copy(fontSize = 13.sp), color = PhotoColors.OnPhotoMuted)
                 }
             }
         }
@@ -236,3 +245,6 @@ private const val MAX_VIDEO_MS = 3 * 60_000L
 private const val KEN_BURNS_ZOOM = 0.08f
 private const val KEN_BURNS_DRIFT = 0.04f
 private val PAIR_GAP = 6.dp
+
+/** Top and bottom margin for the clock and captions; the sides use [ScreenMargin]. */
+private val PHOTO_MARGIN_V = 48.dp

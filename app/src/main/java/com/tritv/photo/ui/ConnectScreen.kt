@@ -4,6 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -20,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.tv.material3.Text
 import com.tritv.photo.data.Album
 import com.tritv.photo.data.AlbumRepository
@@ -63,42 +68,58 @@ fun ConnectScreen(albums: AlbumRepository, onConnected: (Album) -> Unit, onCance
 
     Box(Modifier.fillMaxSize().background(PhotoColors.Canvas)) {
         MeshBand()
-        Column(
-            Modifier.padding(horizontal = ScreenMargin, vertical = 56.dp).widthIn(max = 640.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+        Row(
+            Modifier.fillMaxSize().padding(horizontal = ScreenMargin, vertical = 80.dp),
+            horizontalArrangement = Arrangement.spacedBy(56.dp),
         ) {
-            Text("连接家里的相册", style = PhotoType.Display)
-            Text(
-                "在 Synology Photos 里把一个相册设为公开分享，把链接填在下面。按 OK 开始输入。",
-                style = PhotoType.Body,
-                color = PhotoColors.InkSecondary,
-            )
-            LinkField(
-                value = text,
-                onValueChange = { text = it; error = null },
-                onDone = ::connect,
-                next = connectButton,
-                placeholder = "http://群晖地址:5000/mo/sharing/…",
-                modifier = Modifier.width(600.dp).focusRequester(field),
-            )
-            ButtonRow {
-                PillButton(
-                    text = if (busy) "正在连接…" else "完成连接",
-                    onClick = ::connect,
-                    kind = PillKind.Primary,
-                    modifier = Modifier.focusRequester(connectButton),
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text("第一步", style = PhotoType.Label, color = PhotoColors.InkSecondary)
+                Text("连接家里的相册", style = PhotoType.Display)
+                Text(
+                    "在群晖 Photos 里给相册建一个共享链接，把链接填在下面。不需要账号密码。",
+                    style = PhotoType.Body,
+                    color = PhotoColors.InkMute,
+                    modifier = Modifier.widthIn(max = 490.dp),
                 )
-                if (onCancel != null) PillButton("取消", onCancel)
+                Spacer(Modifier.height(4.dp))
+                Text("共享链接", style = PhotoType.Label, color = PhotoColors.InkSecondary)
+                LinkField(
+                    value = text,
+                    onValueChange = { text = it; error = null },
+                    onDone = ::connect,
+                    next = connectButton,
+                    placeholder = "http://群晖地址:5000/mo/sharing/…",
+                    modifier = Modifier.widthIn(max = 520.dp).fillMaxWidth().focusRequester(field),
+                )
+                Text("按 OK 输入，按 ↓ 收起键盘", style = PhotoType.Caption, color = PhotoColors.InkMute)
+                error?.let { Text(it, style = PhotoType.Body, color = PhotoColors.Error) }
+                Spacer(Modifier.height(4.dp))
+                ButtonRow {
+                    PillButton(
+                        text = if (busy) "正在连接…" else "完成连接",
+                        onClick = ::connect,
+                        kind = PillKind.Primary,
+                        modifier = Modifier.focusRequester(connectButton),
+                    )
+                    if (onCancel != null) PillButton("取消", onCancel)
+                }
             }
-            error?.let { Text(it, style = PhotoType.Body, color = PhotoColors.Error) }
-            Text(
-                "分享链接只能看这一个相册。想要「那年今日」等全库回忆，之后可以再加 DSM 账号。",
-                style = PhotoType.Caption,
-                color = PhotoColors.InkSecondary,
-                modifier = Modifier
-                    .background(PhotoColors.Cream, Radius.Card)
-                    .padding(horizontal = 20.dp, vertical = 14.dp),
-            )
+            Column(
+                Modifier
+                    .padding(top = 100.dp)
+                    .width(300.dp)
+                    .background(PhotoColors.Cream, Radius.Panel)
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text("怎么拿到链接", style = PhotoType.Body)
+                Text(
+                    "1. 手机打开群晖 Photos\n2. 长按相册 → 共享\n3. 打开「共享链接」，复制\n4. 在这里粘贴或输入",
+                    style = PhotoType.Caption.copy(lineHeight = 22.sp),
+                    color = PhotoColors.InkSecondary,
+                )
+                Text("每次打开或进入屏保时，会同步相册里新加的照片。", style = PhotoType.Caption, color = PhotoColors.InkMute)
+            }
         }
     }
 }

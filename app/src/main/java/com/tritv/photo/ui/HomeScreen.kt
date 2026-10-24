@@ -65,9 +65,9 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    Text("共享相册", style = PhotoType.Tag, color = PhotoColors.InkSecondary)
+                    Text("共享相册", style = PhotoType.Label, color = PhotoColors.InkSecondary)
                     Text(album?.name ?: "正在读取相册…", style = PhotoType.Display, maxLines = 2)
-                    album?.let { Text(summary(it), style = PhotoType.Body.tabular(), color = PhotoColors.InkMute) }
+                    album?.let { Text(summary(it), style = PhotoType.Body, color = PhotoColors.InkMute) }
                     Spacer(Modifier.height(10.dp))
                     ButtonRow {
                         PillButton("播放", { onPlay(null) }, PillKind.Primary, Modifier.focusRequester(play), playIcon = true)
@@ -127,16 +127,17 @@ private fun PhotoTile(item: MediaItem, session: ShareSession, onClick: () -> Uni
             modifier = Modifier.fillMaxSize(),
         )
         if (item.isVideo) {
-            Text(
-                "▶",
-                style = PhotoType.Caption,
-                color = PhotoColors.OnPhoto,
-                modifier = Modifier
+            Box(
+                Modifier
                     .align(Alignment.BottomStart)
                     .padding(10.dp)
-                    .background(Color(0x66000000), Radius.Pill)
-                    .padding(horizontal = 10.dp, vertical = 2.dp),
-            )
+                    .size(28.dp)
+                    .background(Color(0x66000000), Radius.Pill),
+                contentAlignment = Alignment.Center,
+            ) {
+                // Nudged right so the triangle's visual centre, not its box, sits in the circle.
+                PlayTriangle(Modifier.padding(start = 2.dp).size(10.dp), color = PhotoColors.OnPhoto)
+            }
         }
     }
 }

@@ -130,8 +130,7 @@ fun PillButton(
  * metrics and sat off-centre next to the label.
  */
 @Composable
-private fun PlayTriangle(modifier: Modifier) {
-    val color = LocalContentColor.current
+fun PlayTriangle(modifier: Modifier, color: Color = LocalContentColor.current) {
     Canvas(modifier) {
         val path = Path().apply {
             moveTo(size.width * 0.12f, 0f)
@@ -147,8 +146,8 @@ private fun PlayTriangle(modifier: Modifier) {
 @Composable
 fun Tag(text: String, modifier: Modifier = Modifier) {
     Text(
-        text,
-        style = PhotoType.Tag.tabular(),
+        interDigits(text),
+        style = PhotoType.Tag,
         color = PhotoColors.PrimaryDeep,
         modifier = modifier
             .background(PhotoColors.Subdued, Radius.Pill)
