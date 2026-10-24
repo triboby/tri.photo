@@ -1,6 +1,8 @@
 package com.tritv.photo.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,10 +71,14 @@ fun ConnectScreen(albums: AlbumRepository, onConnected: (Album) -> Unit, onCance
     Box(Modifier.fillMaxSize().background(PhotoColors.Canvas)) {
         MeshBand()
         Row(
-            Modifier.fillMaxSize().padding(horizontal = ScreenMargin, vertical = 80.dp),
+            Modifier.fillMaxSize().padding(start = ScreenMargin, end = ScreenMargin, top = 80.dp),
             horizontalArrangement = Arrangement.spacedBy(56.dp),
         ) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            // Scrolls rather than squashing the button when an error line makes the column too tall.
+            Column(
+                Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 Text("第一步", style = PhotoType.Label, color = PhotoColors.InkSecondary)
                 Text("连接家里的相册", style = PhotoType.Display)
                 Text(
