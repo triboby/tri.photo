@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The pastel gradient of the legacy icon: cream at the top left, indigo to ruby on the right. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="315"
+        android:centerColor="#C9B6FF"
+        android:endColor="#533AFD"
+        android:startColor="#F5E9D4"
+        android:type="linear" />
+</shape>
