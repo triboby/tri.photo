@@ -1,6 +1,7 @@
 package com.tritv.photo.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,10 +11,13 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -29,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -45,6 +50,7 @@ import androidx.tv.material3.Border
 import androidx.tv.material3.Button
 import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.Glow
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.Text
 import com.tritv.photo.R
 
@@ -71,6 +77,8 @@ fun PillButton(
     onClick: () -> Unit,
     kind: PillKind = PillKind.Secondary,
     modifier: Modifier = Modifier,
+    /** Draws a play triangle before the label. */
+    playIcon: Boolean = false,
 ) {
     val (container, content) = when (kind) {
         PillKind.Primary -> PhotoColors.Primary to PhotoColors.OnPrimary
@@ -100,7 +108,29 @@ fun PillButton(
         scale = ButtonDefaults.scale(focusedScale = 1.04f, pressedScale = 0.97f),
         glow = ButtonDefaults.glow(glow = Glow.None, focusedGlow = Glow.None, pressedGlow = Glow.None),
     ) {
+        if (playIcon) {
+            PlayTriangle(Modifier.size(14.dp))
+            Spacer(Modifier.width(10.dp))
+        }
         Text(text, style = PhotoType.Button)
+    }
+}
+
+/**
+ * A play triangle drawn as a shape. The "▶" character comes from a symbol font with its own
+ * metrics and sat off-centre next to the label.
+ */
+@Composable
+private fun PlayTriangle(modifier: Modifier) {
+    val color = LocalContentColor.current
+    Canvas(modifier) {
+        val path = Path().apply {
+            moveTo(size.width * 0.12f, 0f)
+            lineTo(size.width, size.height / 2f)
+            lineTo(size.width * 0.12f, size.height)
+            close()
+        }
+        drawPath(path, color)
     }
 }
 

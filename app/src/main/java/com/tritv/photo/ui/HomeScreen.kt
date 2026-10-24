@@ -72,7 +72,7 @@ fun HomeScreen(
                     album?.let { Text(summary(it), style = PhotoType.Body.tabular(), color = PhotoColors.InkMute) }
                     Spacer(Modifier.height(10.dp))
                     ButtonRow {
-                        PillButton("▶ 播放", { onPlay(null) }, PillKind.Primary, Modifier.focusRequester(play))
+                        PillButton("播放", { onPlay(null) }, PillKind.Primary, Modifier.focusRequester(play), playIcon = true)
                         PillButton("设为屏保", onScreensaver)
                         PillButton("设置", onSettings, PillKind.Dark)
                     }
