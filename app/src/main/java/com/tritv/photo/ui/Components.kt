@@ -34,6 +34,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -45,6 +46,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Border
 import androidx.tv.material3.Button
@@ -61,6 +63,13 @@ object Radius {
     val Panel = RoundedCornerShape(16.dp)
     val Pill = RoundedCornerShape(percent = 50)
 }
+
+/**
+ * A focus ring drawn [gap] outside the control. tv-material's [Border.inset] grows the outline
+ * outwards when positive, and the stroke straddles that outline, so half its width is added too.
+ */
+fun focusRing(color: Color, width: Dp = 3.dp, gap: Dp = 4.dp, shape: Shape) =
+    Border(BorderStroke(width, color), inset = gap + width / 2, shape = shape)
 
 /** Horizontal safe margin for TV overscan. */
 val ScreenMargin = 64.dp
@@ -103,7 +112,7 @@ fun PillButton(
         ),
         border = ButtonDefaults.border(
             border = if (kind == PillKind.Secondary) Border(BorderStroke(1.5.dp, PhotoColors.Primary), shape = Radius.Pill) else Border.None,
-            focusedBorder = Border(BorderStroke(3.dp, PhotoColors.Subdued), inset = (-4).dp, shape = Radius.Pill),
+            focusedBorder = focusRing(PhotoColors.Subdued, shape = Radius.Pill),
         ),
         scale = ButtonDefaults.scale(focusedScale = 1.04f, pressedScale = 0.97f),
         glow = ButtonDefaults.glow(glow = Glow.None, focusedGlow = Glow.None, pressedGlow = Glow.None),

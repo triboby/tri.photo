@@ -1,6 +1,5 @@
 package com.tritv.photo.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +28,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.Border
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.Glow
 import androidx.tv.material3.Surface
@@ -95,7 +93,8 @@ fun HomeScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text("相册里的照片", style = PhotoType.RowTitle, modifier = Modifier.padding(horizontal = ScreenMargin))
                     LazyRow(
-                        contentPadding = PaddingValues(horizontal = ScreenMargin, vertical = 10.dp),
+                        // Room for the focused tile's scale and the ring outside it; LazyRow clips to its bounds.
+                        contentPadding = PaddingValues(horizontal = ScreenMargin, vertical = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(18.dp),
                     ) {
                         items(album.items.asReversed(), key = { it.id }) { item ->
@@ -116,7 +115,7 @@ private fun PhotoTile(item: MediaItem, session: ShareSession, onClick: () -> Uni
         shape = ClickableSurfaceDefaults.shape(Radius.Card),
         colors = ClickableSurfaceDefaults.colors(containerColor = PhotoColors.CanvasSoft, focusedContainerColor = PhotoColors.CanvasSoft),
         border = ClickableSurfaceDefaults.border(
-            focusedBorder = Border(BorderStroke(3.dp, PhotoColors.Primary), inset = (-6).dp, shape = Radius.Card),
+            focusedBorder = focusRing(PhotoColors.Primary, shape = Radius.Card),
         ),
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1.06f),
         glow = ClickableSurfaceDefaults.glow(glow = Glow.None, focusedGlow = Glow.None),

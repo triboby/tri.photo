@@ -114,7 +114,7 @@ private fun SettingRow(label: String, value: String, modifier: Modifier = Modifi
         ),
         border = ClickableSurfaceDefaults.border(
             border = Border(BorderStroke(1.dp, PhotoColors.Hairline), shape = Radius.Card),
-            focusedBorder = Border(BorderStroke(2.5.dp, PhotoColors.Primary), shape = Radius.Card),
+            focusedBorder = focusRing(PhotoColors.Primary, width = 2.5.dp, gap = 3.dp, shape = Radius.Card),
         ),
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1.02f),
         glow = ClickableSurfaceDefaults.glow(glow = Glow.None, focusedGlow = Glow.None),
