@@ -1,6 +1,6 @@
 """Renders the launcher icons and the TV banner for tri.photo.
 
-Usage: python3 design/logo/render.py <path to a Noto Sans SC Regular .ttf>
+Usage: python3 design/logo/render.py <path to a Noto Sans SC SemiBold .ttf>
 The mark is two rounded photo cards, the back one tilted, on the pastel gradient (cream, orange,
 lavender, indigo, ruby). Also renders the gradient band drawn behind the top of the home screen.
 """
@@ -12,7 +12,6 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 ROOT = Path(__file__).resolve().parents[2]
 RES = ROOT / "app/src/main/res"
-INTER = RES / "font/inter_regular.ttf"
 
 INK = (13, 37, 61)
 INDIGO = (83, 58, 253)
@@ -119,6 +118,8 @@ def adaptive_foreground(px):
 
 
 def banner(cjk_font):
+    """320 x 180 dp at xhdpi, laid out like the tri.iptv banner: type 42, weight 600, mark 68 high,
+    gap 26, the pair centred. Pass a Noto Sans SC SemiBold font."""
     scale = 4
     w, h = 320 * scale, 180 * scale
     img = Image.new("RGBA", (w, h), (255, 255, 255, 255))
@@ -126,14 +127,16 @@ def banner(cjk_font):
     fade = Image.linear_gradient("L").resize((w, round(h * 0.55)))
     white = Image.new("RGBA", (w, round(h * 0.55)), (255, 255, 255, 255))
     img.paste(white, (0, 0), fade)
-    m = mark(round(h * 0.82))
-    img.alpha_composite(m, (round(w * 0.02), round((h - m.height) / 2)))
-    d = ImageDraw.Draw(img)
-    title = ImageFont.truetype(cjk_font, round(h * 0.30))
-    sub = ImageFont.truetype(str(INTER), round(h * 0.10))
-    x = round(w * 0.47)
-    d.text((x, round(h * 0.22)), "回忆", font=title, fill=INK)
-    d.text((x + round(h * 0.01), round(h * 0.64)), "tri.photo", font=sub, fill=(100, 116, 141))
+    m = mark(1024)
+    m = m.crop(m.getchannel("A").point(lambda a: 255 if a > 8 else 0).getbbox())
+    mh = 68 * scale
+    m = m.resize((round(m.width * mh / m.height), mh), Image.LANCZOS)
+    fs, gap = 42 * scale, 26 * scale
+    title = ImageFont.truetype(cjk_font, fs)
+    tw = ImageDraw.Draw(img).textlength("回忆", font=title)
+    x = round((w - (m.width + gap + tw)) / 2)
+    img.alpha_composite(m, (x, (h - mh) // 2))
+    ImageDraw.Draw(img).text((x + m.width + gap, h / 2 + 0.36 * fs), "回忆", font=title, fill=INK, anchor="ls")
     return img.resize((320, 180), Image.LANCZOS)
 
 
