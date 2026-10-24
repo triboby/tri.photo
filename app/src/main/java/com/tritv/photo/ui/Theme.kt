@@ -7,6 +7,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
@@ -58,6 +59,8 @@ val Inter = FontFamily(
 
 private const val SS01 = "ss01"
 
+private val CenteredLine = LineHeightStyle(alignment = LineHeightStyle.Alignment.Center, trim = LineHeightStyle.Trim.Both)
+
 /**
  * Type ladder for a 960 x 540 dp screen seen from across the room. Only titles of 32 sp and up use
  * the thin 300 weight with negative tracking; body text and buttons are 400, since thin text at
@@ -68,9 +71,14 @@ object PhotoType {
     val Title = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 32.sp, lineHeight = 36.sp, letterSpacing = (-0.64).sp, fontFeatureSettings = SS01)
     val RowTitle = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = (-0.22).sp, fontFeatureSettings = SS01)
     val Body = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 18.sp, lineHeight = 26.sp, fontFeatureSettings = SS01)
-    val Button = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 18.sp, lineHeight = 20.sp, fontFeatureSettings = SS01)
+    /**
+     * Pill labels are mostly Chinese, so they use the system font: mixing Inter's line metrics
+     * with the system's Chinese glyphs drew them low in the pill. The line is centred and trimmed
+     * so the label sits in the middle of the pill whatever the font.
+     */
+    val Button = TextStyle(fontWeight = FontWeight.Normal, fontSize = 18.sp, lineHeight = 24.sp, lineHeightStyle = CenteredLine)
     val Caption = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 15.sp, lineHeight = 20.sp, fontFeatureSettings = SS01)
-    val Tag = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 18.sp, letterSpacing = 0.4.sp, fontFeatureSettings = SS01)
+    val Tag = TextStyle(fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 18.sp, letterSpacing = 0.4.sp, lineHeightStyle = CenteredLine)
     val Clock = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Light, fontSize = 64.sp, lineHeight = 68.sp, letterSpacing = (-1.4).sp, fontFeatureSettings = "$SS01, tnum")
 }
 
