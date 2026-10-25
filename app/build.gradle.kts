@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+/** Commits on HEAD; needs full history, so CI checks out with fetch-depth 0. */
+val commitCount: Int = providers.exec { commandLine("git", "rev-list", "--count", "HEAD") }
+    .standardOutput.asText.get().trim().toInt()
+
 android {
     namespace = "com.tritv.photo"
     compileSdk = 35
@@ -12,8 +16,10 @@ android {
         applicationId = "com.tritv.photo"
         minSdk = 23
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        // One more per commit, so each new build installs as an upgrade; TV launchers such as
+        // Sony's cache the banner per version and kept showing the old one otherwise.
+        versionCode = commitCount
+        versionName = "0.1.$commitCount"
     }
 
     // Shared debug key (the same one tri.iptv uses) so every CI build installs over the previous
